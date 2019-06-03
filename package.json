@@ -1,0 +1,26 @@
+{
+  "name": "final-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "react": "cd web && npm install && npm run start",
+    "server": "cd server && npm install && npm run tsc && npm start",
+    "heroku-postbuild": "concurrently \" npm run react\" \" npm run server\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/minsohng/lighthouse-final-project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/minsohng/lighthouse-final-project/issues"
+  },
+  "homepage": "https://github.com/minsohng/lighthouse-final-project#readme",
+  "dependencies": {
+    "concurrently": "^4.1.0"
+  }
+}
