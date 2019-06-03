@@ -11,10 +11,7 @@ const Roompage = (props) => {
   const [containerLabel, setContainerLabel] = useState('port about');
   return (
     <div className={containerLabel}>
-   
       <Publicroom socket={socket} setContainerLabel={setContainerLabel} roomList={props.roomList}/>
-     
-      
     </div>
   )
 }

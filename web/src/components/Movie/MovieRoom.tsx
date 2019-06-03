@@ -27,6 +27,8 @@ const MovieRoom = (props) => {
   const [isRoom, setIsRoom] = useState(false);
   const [username, setUsername] = useState('');
   const [playlist, setPlaylist] = useState([]);
+  const [isHidden, setIsHidden] = useState(false);
+  const [turnArrow, setTurnArrow] = useState("fas fa-3x fa-chevron-up down");
   
   const userObj = {
     socket,
@@ -57,6 +59,8 @@ const MovieRoom = (props) => {
     videoData.socketId = socket.id;
     videoData.id = id;
     setPlaylist([...playlist, videoData]);
+    setTurnArrow("fas fa-3x fa-chevron-up up")
+    setIsHidden(true);
   }
   
   const sendMessage = (data, id, index) => {
@@ -141,7 +145,8 @@ const MovieRoom = (props) => {
     })
 
     socket.on('sync playlist', (data) => {
-      console.log(data);
+      setTurnArrow("fas fa-3x fa-chevron-up up")      
+      setIsHidden(true);
       setPlaylist(data)
     })
 
@@ -251,8 +256,12 @@ const MovieRoom = (props) => {
             playlist={playlist} 
             playVideo={playVideo}
             deleteVideo={deleteVideo}
-            admin={userObj}/>
-
+            admin={userObj}
+            isHidden={isHidden}
+            setIsHidden={setIsHidden}
+            turnArrow={turnArrow}
+            setTurnArrow={setTurnArrow}
+          />
             </footer>
           
               {/* testing purposes */}

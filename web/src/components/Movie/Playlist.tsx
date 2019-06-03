@@ -3,8 +3,8 @@ import Video from "./Video";
 import { useEffect, useState } from "react";
 
 const Playlist = props => {
-  const [isHidden, setIsHidden] = useState(false);
-  const [turnArrow, setTurnArrow] = useState("fas fa-3x fa-chevron-up down");
+  const { isHidden, setIsHidden, turnArrow, setTurnArrow } = props;
+  // const [turnArrow, setTurnArrow] = useState("fas fa-3x fa-chevron-up down");
   const playlist = props.playlist;
   // let firstPage;
   // let secondPage;
