@@ -18,7 +18,7 @@ const Publicroom = props => {
        <header className="Header">
     
   
-    <h4>public rooms</h4>
+    <h4>Public Rooms</h4>
      <div id="navigation" className="Navigation">
    
     <nav>
