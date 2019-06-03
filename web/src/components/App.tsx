@@ -28,7 +28,6 @@ const App = () => {
         setRoomList(response.data.list)
       })
     })
-
     
   },[])
   

@@ -5,8 +5,8 @@ import Roomstate from "./Roomstate";
 const Publicroom = props => {
   const socket = props.socket;
   console.log("PROPS", props.roomList)
-  const rooms = props.roomList && props.roomList.map(room =>
-    <Roomstate socket={socket} roomId={room.roomId}/>
+  const rooms = props.roomList && props.roomList.map((room, i) =>
+    <Roomstate socket={socket} roomId={room.roomId} key={i+1000}/>
   );
   console.log("mappedroom", rooms)
   
@@ -24,17 +24,9 @@ const Publicroom = props => {
     <nav>
       
       <ul>
-     
-        <li>
-        <Link to="/publicroom" style={{ textDecoration: 'none', color: 'white' }}>Create Room</Link>
-        </li>
-        <li>
-          
-        </li>
-        <li></li>
         <li>
         <Link to="/" style={{ textDecoration: 'none', color: 'white' }}>Home</Link>
-      </li>
+        </li>
       </ul>
     </nav>
   </div>

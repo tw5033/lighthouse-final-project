@@ -20,10 +20,11 @@ interface Admin {
 interface RoomInfo {
   roomId: string
   type: string
+  numClients: number
 }
 
 const adminSocketList: Admin[] = [];
-const roomList: RoomInfo[] = [];
+let roomList: RoomInfo[] = [];
 const curVideoObj = {};
 const playlistObj = {};
 const statusObj = {};
@@ -41,9 +42,9 @@ app.use(cors());
 
 app.post('/api/fetchState', (req,res) => {
   const roomId = req.body.roomId;
-  console.log("fetchState-room", roomId)
-  console.log("fetchState-obj", curVideoObj)
-  console.log("fetchState-objroom", curVideoObj[roomId])
+  // console.log("fetchState-room", roomId)
+  // console.log("fetchState-obj", curVideoObj)
+  // console.log("fetchState-objroom", curVideoObj[roomId])
   
   res.json(curVideoObj[roomId] && curVideoObj[roomId]);
 })
@@ -60,7 +61,7 @@ app.post('/api/getRoom', (req, res) => {
   const params = req.body.params;
   const filteredRoom = roomList.filter(room => room.roomId === params);
   const haveRoom = filteredRoom.length > 0;
-  console.log("filteredROOM", filteredRoom);
+  // console.log("filteredROOM", filteredRoom);
   const promise1 = axios.get('https://api.datamuse.com/words?ml=ocean');
   const promise2 = axios.get('https://api.datamuse.com/words?ml=animal');
   const currentVideo = curVideoObj[params] ? curVideoObj[params].videoId : '';
@@ -91,7 +92,7 @@ app.post('/api/createRoom', (req, res) => {
   const socket = JSON.parse(req.body.socket);
   const type = req.body.type;
   
-  console.log(socket.id)
+  // console.log(socket.id)
 
   Promise.all([promise1, promise2]).then(function(response) {
     let isNotAvailable;
@@ -108,7 +109,8 @@ app.post('/api/createRoom', (req, res) => {
 
     roomList.push({
       roomId,
-      type
+      type,
+      numClients: 1
     });
     adminSocketList.push({
       roomId: roomId,
@@ -161,9 +163,9 @@ io.of('movie')
 
   
   socket.on('done playing', (data) => {
-    console.log("PLAYLIST", playlistObj[roomId])
+    // console.log("PLAYLIST", playlistObj[roomId])
     statusObj[data][socket.id] = false
-    console.log(statusObj)
+    // console.log(statusObj)
     const statusArr = Object.values(statusObj[data]);
     
     if (!statusArr.includes(true) && playlistObj[data].length > 0) {
@@ -183,7 +185,7 @@ io.of('movie')
         roomId
        };
       io.of('movie').emit('update room state');
-      console.log(statusObj)
+      
     }
   })
 
@@ -211,7 +213,9 @@ io.of('movie')
       if (statusObj[roomObject.roomId]) {
         statusObj[roomObject.roomId][socket.id] = true
       }
-
+      const filteredRoomList = roomList.filter(room => room.roomId === roomId)
+      filteredRoomList[0] && (filteredRoomList[0].numClients = filteredRoomList[0].numClients + 1)
+        
       // update public room to reflect number of clients
       io.of('/movie').in(roomId).clients((error, clients) => {
         if (error) throw error;
@@ -232,10 +236,10 @@ io.of('movie')
         socket.emit('sync video timestamp', timestamp);
       })
       let rooms = Object.keys(socket.rooms);
-      console.log(rooms);
+      // console.log(rooms);
 
       const filteredAdmin = adminSocketList.filter(admin => admin.id === socket.id)
-      console.log("filtered", filteredAdmin)
+      // console.log("filtered", filteredAdmin)
             
       const isAdmin = filteredAdmin.length > 0;
 
@@ -258,15 +262,22 @@ io.of('movie')
 
       socket.on('share video timestamp', (timestamp: number) => {
         if (isAdmin && timestamp) {
-          console.log(timestamp)
+          // console.log(timestamp)
           socket.to(roomObject.roomId).broadcast.emit('sync video timestamp', timestamp);
         }
-        
       })
+
       socket.on('disconnect', () => {
         console.log('socket disconnected')
+        const filteredRoomList = roomList.filter(room => room.roomId === roomId)
+        filteredRoomList[0] && (filteredRoomList[0].numClients = filteredRoomList[0].numClients - 1)
+        
         io.of('/movie').in(roomId).clients((error, clients) => {
           if (error) throw error;
+          if (filteredRoomList[0] && filteredRoomList[0].numClients === 0 ) {
+            roomList = roomList.filter(room => room.roomId !== roomId)
+
+          }
           io.of('movie').emit("send number of clients", ({
             numClients: clients.length,
             roomId
@@ -275,20 +286,21 @@ io.of('movie')
         if (roomId && socket && statusObj[roomId] && statusObj[roomId][socket.id]) {
           delete statusObj[roomId][socket.id]
         }
+        console.log("ROOM LIST", roomList)
+      })
+      socket.on('get number of clients', (roomId) => {
+        io.of('/movie').in(roomId).clients((error, clients) => {
+          if (error) throw error;
+          io.of('movie').emit("send number of clients", ({
+            numClients: clients.length,
+            roomId
+          }));
+          console.log(`number of clients ${clients.length} ${clients}`)
+        });
       })
     });
   })
 
-  socket.on('get number of clients', (roomId) => {
-    io.of('/movie').in(roomId).clients((error, clients) => {
-      if (error) throw error;
-      io.of('movie').emit("send number of clients", ({
-        numClients: clients.length,
-        roomId
-      }));
-      console.log(`number of clients ${clients.length} ${clients}`)
-    });
-  })
 
 })
 

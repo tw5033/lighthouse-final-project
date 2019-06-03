@@ -502,8 +502,6 @@ p {
 		// border-bottom: 5px solid #6473C3;
 		bottom: 0;
 		display: flex;
-		
-		
 		position: fixed;
 		z-index: 8;
 		overflow-y: scroll;
@@ -527,7 +525,7 @@ p {
 		p {
 		  font-family: 'Roboto'; 
 			text-align: center;
-		  text-transform: uppercase;
+		  // text-transform: uppercase;
 		  color: #FFF;
 		  user-select: none;
 		}
@@ -626,7 +624,6 @@ p {
 		  top: 10px;
 			i {
 				position: fixed;
-				left: 45vw;
 				padding: 2em;
 				color: white;
 				font-size: 2em;
@@ -636,12 +633,11 @@ p {
 			
 			.down {
 				transform: rotateZ(180deg);
-				position: fixed;
 				left: 45vw;
+				bottom: -2em;				
 			}
-			.right {
+			.up {
 				transform: rotateZ(0deg);
-				position:fixed;
 				left: 45vw;
 				bottom: 4em;
 			}
